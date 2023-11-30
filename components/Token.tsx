@@ -1,31 +1,20 @@
-"use client";
 
-/*
-  Here we will display the tokens and the add component
-  We will import 2 components:
-  Token component - the individual tine item
-  AddToken component - the form to add the token
-*/
+import React from 'react';
 
-import React, { useState } from "react";
-import Token from "@/components/TokensContainer";
-import AddToken from "@/components/AddTokenToList";
+interface TokenProps {
+  name: string;
+  symbol: string;
+  price: number;
+}
 
-const TokenDashboard = () => {
-  const [tokens, setTokens] = useState([]); // IChange to use the react-query module from tanstack
-
-  const addToken = (token) => {
-    setTokens([...tokens, token]);
-  };
-
+const Token: React.FC<TokenProps> = ({ name, symbol, price }) => {
   return (
     <div>
-      {tokens.map((token, index) => (
-        <Token key={index} {...token} />
-      ))}
-      <AddToken onAddToken={addToken} />
+      <h2>{name}</h2>
+      <p>Symbol: {symbol}</p>
+      <p>Price: ${price}</p>
     </div>
   );
 };
 
-export default TokenDashboard;
+export default Token;

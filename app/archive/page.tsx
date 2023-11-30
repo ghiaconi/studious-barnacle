@@ -1,4 +1,4 @@
-import TokenDashboard from "@/components/Token";
+import TokenDashboard from "@/components/TokensTable";
 
 const Page = () => {
   return (
