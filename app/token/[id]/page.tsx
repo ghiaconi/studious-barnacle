@@ -23,7 +23,7 @@ export default async function Token({ params }: { params: { id: string } }) {
     return <p>Something went wrong!</p>;
   }
 
-  const { name, image, market_data } = token;
+  const { name, image, market_data, market_cap_rank } = token;
   const {
     current_price,
     market_cap,
@@ -37,7 +37,6 @@ export default async function Token({ params }: { params: { id: string } }) {
       ? "text-red-500"
       : "text-green-500";
 
-  const marketCapRank = token && token.market_cap_rank.toLocaleString();
   const rankColor =
     token.market_cap_rank < 10 ? "bg-green-500" : "bg-orange-500";
   const alt = "/placeholder.png";
@@ -50,7 +49,7 @@ export default async function Token({ params }: { params: { id: string } }) {
           <p
             className={`py-1 px-2 ${rankColor} text-white rounded-lg inline-block`}
           >
-            Rank # {marketCapRank}
+            Rank # {market_cap_rank.toLocaleString()}
           </p>
           <div className="flex items-center">
             <Image
@@ -140,6 +139,7 @@ export default async function Token({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className="py-5 ">
+        {/*About is useless, better to replace it with a price chart or smth*/}
         <h3 className="text-xl font-bold py-3">About</h3>
         <p className="">{token.description.en}</p>
       </div>

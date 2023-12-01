@@ -1,28 +1,125 @@
 "use client";
 
-/*
-  Here we will display the tokens table, it is just one component]
-  Each row will have also a button to archive the token
-*/
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import Link from "next/link";
 
-import React, { useState } from "react";
-import { useReactTable } from "@tanstack/react-table";
+const buildColumns = (handleButtonClick, Icon) => [
+  {
+    header: "Rank",
+    accessorKey: "rank",
+  },
+  {
+    header: "Name",
+    accessorKey: "name",
+    cell: ({ row }) => (
+      <Link href={`/token/${row.original.id}`}>
+        <div className="flex items-center">
+          <img
+            src={row.original.image}
+            alt={row.original.symbol}
+            className="h-6 w-6 mr-2"
+          />
+          <div>
+            <div>{row.original.name}</div>
+            <div className="text-sm text-gray-500">{row.original.symbol}</div>
+          </div>
+        </div>
+      </Link>
+    ),
+  },
+  {
+    header: "Price",
+    accessorKey: "price",
+  },
+  {
+    header: "Price Change 1h",
+    accessorKey: "price_change_1h",
+  },
+  {
+    header: "Price Change 24h",
+    accessorKey: "price_change_24h",
+  },
+  {
+    header: "Volume",
+    accessorKey: "volume",
+  },
+  {
+    header: "Last update",
+    accessorKey: "last_updated",
+  },
+  {
+    header: "Action",
+    accessorKey: "action",
+    cell: ({ row }) => (
+      <button
+        title="Archive"
+        className="text-red-600 hover:text-red-900"
+        onClick={() => handleButtonClick(row.original.id)}
+      >
+        <Icon className="mr-1 m-r-2 h-5 w-5" />
+      </button>
+    ),
+  },
+];
 
-const TokenDashboard = () => {
-  const table = useReactTable({});
-  const [tokens, setTokens] = useState([]); // IChange to use the react-query module from tanstack
-
-  const addToken = (token) => {
-    setTokens([...tokens, token]);
-  };
+export default function TokensTable({
+  tokens,
+  handleActionBtn,
+  ActionBtnIcon,
+}) {
+  const columns = buildColumns(handleActionBtn, ActionBtnIcon);
+  const table = useReactTable({
+    data: tokens,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <div>
-      {tokens.map((token, index) => (
-        <Token key={index} {...token} />
-      ))}
-    </div>
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        {table.getHeaderGroups().map((headerGroup) => {
+          return (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((column) => {
+                return (
+                  <th
+                    key={column.id}
+                    colSpan={column.colSpan}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    {flexRender(
+                      column.column.columnDef.header,
+                      column.getContext()
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {table.getRowModel().rows.map((row, i) => {
+          return (
+            <tr
+              key={row.id}
+              className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+            >
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
-};
-
-export default TokenDashboard;
+}
