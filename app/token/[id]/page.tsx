@@ -58,14 +58,14 @@ export default async function Token({ params }: { params: { id: string } }) {
           </p>
           <div className="flex items-center">
             <Image
-              src={token.image || alt}
+              src={image || alt}
               alt="coin image"
               width={40}
               height={40}
               className="mr-2"
             ></Image>
             <h2 className="py-2 text-2xl text-black font-bold">
-              {token.name}
+              {name}
               <span className=" px-2 text-base font-light text-neutral-400">
                 {token.symbol}
               </span>
@@ -116,23 +116,17 @@ export default async function Token({ params }: { params: { id: string } }) {
         <div className="basis-1/3">
           <ul className="py-3">
             <li className="py-1">
-              <span className="font-semibold mr-5">Liquidity Score:</span>
-              {token.liquidity_score}%
+              <span className="font-semibold mr-5">Price Change 1h</span>
+              {token.price_change_percentage_1h_in_currency.toLocaleString()}%
             </li>
             <li className="py-1">
-              <span className="font-semibold mr-5">Community Score:</span>
-              {token.community_score}%
+              <span className="font-semibold mr-5">Price Change 24h</span>
+              {token.price_change_percentage_24h_in_currency.toLocaleString()}%
             </li>
             <li className="py-1">
-              <span className="font-semibold mr-5">Total volume</span>
-              <span className="font-semibold mr-5 text-blue-400">
-                {token.total_volume}
-              </span>
-            </li>
-            <li className="py-1">
-              <span className="font-semibold mr-5">Total supply</span>
-              <span className="font-semibold py-2 mr-5">
-                {token.total_supply}%
+              <span className="font-semibold mr-5">Price Change 7d</span>
+              <span className="font-semibold mr-5">
+                {token.price_change_percentage_7d_in_currency.toLocaleString()}%
               </span>
             </li>
           </ul>
@@ -141,7 +135,7 @@ export default async function Token({ params }: { params: { id: string } }) {
       <div className="py-5 ">
         {/*About is useless, better to replace it with a price chart or smth*/}
         <h3 className="text-xl font-bold py-3">{`${name} Price chart ${token.symbol}`}</h3>
-        <p className="">{`token.sparkline~magic`}</p>
+        <p className="">{`Loading....`}</p>
       </div>
     </div>
   );

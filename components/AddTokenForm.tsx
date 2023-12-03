@@ -1,39 +1,58 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const AddTokenForm = ({ onAddToken }) => {
-  const [tokenId, setTokenId] = useState("");
+export default function AddTokenForm() {
+  const { register, handleSubmit, reset } = useForm();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onAddToken(tokenId);
-    setTokenId("");
+  const queryClient = useQueryClient();
+
+  const addTokenMutation = useMutation({
+    mutationFn: (id) =>
+      fetch(
+        `http://localhost:5050/api/v1/users/app/tokens/add?token_id=${id}`,
+        {
+          method: "POST",
+        }
+      ).then((res) => res.json()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["monitored_tokens"] });
+    },
+  });
+
+  const addToken = (data) => {
+    addTokenMutation.mutate(data.token_id);
+    reset();
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-1/2 mx-auto"
-    >
-      <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
-        type="text"
-        name="name"
-        placeholder="Token id"
-        value={tokenId}
-        onChange={(e) => setTokenId(e.target.value)}
-      />
-      <button
-        className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        type="submit"
-        value="Submit"
-      >
-        Add token
-      </button>
+    <form className="w-full max-w-sm mb-3" onSubmit={handleSubmit(addToken)}>
+      <div className="flex items-center border-b border-gray-500 py-2">
+        <input
+          {...register("token_id", {
+            required: true,
+            minLength: 3,
+            maxLength: 20,
+          })}
+          className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+          type="text"
+          placeholder="Token id"
+          aria-label="Token id"
+        />
+        <button
+          disabled={addTokenMutation.isPending}
+          className="flex-shrink-0 transition duration-500 ease-in-out bg-gray-500 hover:bg-gray-700 border-gray-500 hover:border-gray-700 text-sm border-4 text-white py-1 px-2 rounded"
+          type="submit"
+        >
+          {addTokenMutation.isPending ? "Loading..." : "Add Token"}
+        </button>
+      </div>
+      <div>
+        {addTokenMutation.isError && (
+          <div className="text-red-500">Error adding token</div>
+        )}
+      </div>
     </form>
   );
-};
-
-export default AddTokenForm;
+}

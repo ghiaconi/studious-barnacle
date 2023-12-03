@@ -3,9 +3,19 @@
 import {
   useReactTable,
   getCoreRowModel,
+  getSortedRowModel,
   flexRender,
+  SortingState,
+  createColumnHelper,
 } from "@tanstack/react-table";
+import { useState } from "react";
 import Link from "next/link";
+
+const columnHelper = createColumnHelper();
+
+function priceChangeClass(price) {
+  parseFloat(price) < 0 ? "text-red-500" : "text-green-500";
+}
 
 const buildColumns = (handleButtonClick, Icon) => [
   {
@@ -72,10 +82,18 @@ export default function TokensTable({
   ActionBtnIcon,
 }) {
   const columns = buildColumns(handleActionBtn, ActionBtnIcon);
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data: tokens,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -89,12 +107,21 @@ export default function TokensTable({
                   <th
                     key={column.id}
                     colSpan={column.colSpan}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    onClick={column.column.getToggleSortingHandler()}
+                    className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                      column.column.getCanSort()
+                        ? "cursor-pointer select-none"
+                        : ""
+                    }`}
                   >
                     {flexRender(
                       column.column.columnDef.header,
                       column.getContext()
                     )}
+                    {{
+                      asc: " ▲",
+                      desc: " ▼",
+                    }[column.column.getIsSorted() as string] ?? null}
                   </th>
                 );
               })}

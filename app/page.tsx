@@ -54,23 +54,6 @@ export default function Home() {
     },
   });
 
-  const addTokenMutation = useMutation({
-    mutationFn: (id) =>
-      fetch(
-        `http://localhost:5050/api/v1/users/app/tokens/add?token_id=${id}`,
-        {
-          method: "POST",
-        }
-      ).then((res) => res.json()),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["monitored_tokens"] });
-    },
-  });
-
-  const addToken = (id) => {
-    addTokenMutation.mutate(id);
-  };
-
   const archiveToken = (id) => {
     archiveTokenMutation.mutate(id);
   };
@@ -86,7 +69,7 @@ export default function Home() {
   return (
     <div>
       <div className="m-3">
-        <AddTokenForm onAddToken={addToken} />
+        <AddTokenForm />
         <TokensTable
           tokens={tokensList}
           handleActionBtn={archiveToken}
