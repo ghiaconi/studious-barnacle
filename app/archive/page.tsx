@@ -14,8 +14,8 @@ export default function Home() {
   } = useQuery({
     queryKey: ["archived_tokens"],
     queryFn: () =>
-      fetch(`http://localhost:5050/api/v1/users/app/archived_tokens`).then(
-        (res) => res.json()
+      fetch(`${process.env.NEXT_PUBLIC_ARCHIVED_LIST_URL}`).then((res) =>
+        res.json()
       ),
     select: ({ data }) => {
       return data.map((item) => ({
@@ -33,21 +33,18 @@ export default function Home() {
     },
   });
 
-  const mutation = useMutation({
+  const enableTokenMutation = useMutation({
     mutationFn: (id) =>
-      fetch(
-        `http://localhost:5050/api/v1/users/app/tokens/add?token_id=${id}`,
-        {
-          method: "POST",
-        }
-      ).then((res) => res.json()),
+      fetch(`${process.env.NEXT_PUBLIC_ADD_TOKENS_URL}?token_id=${id}`, {
+        method: "POST",
+      }).then((res) => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["archived_tokens"] });
     },
   });
 
   const enableToken = (id) => {
-    mutation.mutate(id);
+    enableTokenMutation.mutate(id);
   };
 
   if (isLoading) {

@@ -1,12 +1,11 @@
 import React from "react";
 import axios from "axios";
 import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
 
 const getToken = async (tokenId: string) => {
   try {
     const response = await axios.get(
-      `${process.env.COIN_MAPI_BASE_URL}/tokens/${tokenId}`
+      `${process.env.NEXT_PUBLIC_COIN_MAPI_BASE_URL}/tokens/${tokenId}`
     );
 
     return response.data.data.data;
@@ -27,14 +26,10 @@ export default async function Token({ params }: { params: { id: string } }) {
   const {
     name,
     image,
-    market_data,
     market_cap_rank,
     current_price,
     market_cap,
-    high_24h,
-    low_24h,
     price_change_percentage_24h,
-    market_cap_change_percentage_24h,
     circulating_supply,
   } = token;
 

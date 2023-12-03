@@ -3,13 +3,7 @@
 import TokensTable from "components/TokensTable";
 import AddTokenForm from "components/AddTokenForm";
 import { ArchiveBoxArrowDownIcon } from "@heroicons/react/24/outline";
-import {
-  useQuery,
-  useQueryClient,
-  useIsFetching,
-  useMutation,
-} from "@tanstack/react-query";
-import { Session } from "inspector";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -21,8 +15,8 @@ export default function Home() {
   } = useQuery({
     queryKey: ["monitored_tokens"],
     queryFn: () =>
-      fetch(`http://localhost:5050/api/v1/users/app/monitored_tokens`).then(
-        (res) => res.json()
+      fetch(`${process.env.NEXT_PUBLIC_ACTIVE_TOKENS_URL}`).then((res) =>
+        res.json()
       ),
     select: ({ data }) => {
       return data.map((item) => ({
@@ -43,12 +37,9 @@ export default function Home() {
 
   const archiveTokenMutation = useMutation({
     mutationFn: (id) =>
-      fetch(
-        `http://localhost:5050/api/v1/users/app/tokens/remove?token_id=${id}`,
-        {
-          method: "DELETE",
-        }
-      ).then((res) => res.json()),
+      fetch(`${process.env.NEXT_PUBLIC_ARCHIVE_TOKENS_URL}?token_id=${id}`, {
+        method: "DELETE",
+      }).then((res) => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monitored_tokens"] });
     },

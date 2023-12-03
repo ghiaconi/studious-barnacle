@@ -10,12 +10,9 @@ export default function AddTokenForm() {
 
   const addTokenMutation = useMutation({
     mutationFn: (id) =>
-      fetch(
-        `http://localhost:5050/api/v1/users/app/tokens/add?token_id=${id}`,
-        {
-          method: "POST",
-        }
-      ).then((res) => res.json()),
+      fetch(`${process.env.NEXT_PUBLIC_ADD_TOKENS_URL}?token_id=${id}`, {
+        method: "POST",
+      }).then((res) => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monitored_tokens"] });
     },
